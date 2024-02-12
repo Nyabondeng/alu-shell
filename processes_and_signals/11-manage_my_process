@@ -13,15 +13,25 @@ start() {
 stop() {
     sudo kill -15 "$(cat "$PIDFILE")" && rm -f "$PIDFILE"
     echo "manage_my_process stopped"
-} 
-restart(){  
+}
+
+case "$1" in
+    start)
+       start
+       echo "manage_my_process started"
+       ;;
+    stop)
        stop
-       start 
+       echo "manage_my_process stopped"
+       ;;
+    restart)
+       stop
+       start
        echo "manage_my_process restarted"
        ;;
-       *)ho "Usage: manage_my_process {start|stop|restart}"
-        echo "Usage: manage_my_process {start,stop or restart}"
-        esac
+    *)
+       echo "Usage: manage_my_process {start|stop|restart}"
+esac
 
-exit 0
+exit 0 
 fi

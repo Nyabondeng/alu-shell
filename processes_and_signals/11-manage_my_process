@@ -1,36 +1,24 @@
 #!/usr/bin/env bash
-#Bash script that creates a sub-process
-./manage_my_process
+#manage my process
 
-PIDFILE=/var/run/my_process.pid
-
-start() {
+file=/var/run/my_process.pid
+if [ "$1" == "start" ];
+then
     ./manage_my_process &
-    echo "$!" > "$PIDFILE"
+    sudo bash -c "echo $! > $file"
     echo "manage_my_process started"
-}
-
-stop() {
-    sudo kill -15 "$(cat "$PIDFILE")" && rm -f "$PIDFILE"
+elif [ "$1" == "stop" ];
+then
+    pkill -f ./manage_my_process
+    sudo rm $file
     echo "manage_my_process stopped"
-}
-
-case "$1" in
-    start)
-       start
-       echo "manage_my_process started"
-       ;;
-    stop)
-       stop
-       echo "manage_my_process stopped"
-       ;;
-    restart)
-       stop
-       start
-       echo "manage_my_process restarted"
-       ;;
-    *)
-       echo "Usage: manage_my_process {start|stop|restart}"
-esac
-
-exit 0 
+elif [ "$1" == "restart" ];
+then
+    pkill -f ./manage_my_process
+    sudo rm $file
+    ./manage_my_process &
+    sudo bash -c "echo $! > $file"
+    echo "manage_my_process restarted"
+else
+    echo "Usage: manage_my_process {start|stop|restart}"
+fi
